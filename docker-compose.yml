@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+    mongodb:
+        image: mongo
+        container_name: mongodb
+        volumes:
+            - snellbaas_mongodb:/data/db
+        ports:
+            - 27017:27017
+        restart: unless-stopped
+        environment:
+            - PUID=1000
+            - PGID=1000
+volumes:
+    snellbaas_mongodb:
