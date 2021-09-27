@@ -5,5 +5,6 @@ pub struct Project {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     pub id: Option<mongodb::bson::oid::ObjectId>,
     pub name: String,
+    #[serde(default)]
     pub users: Vec<String>,
 }

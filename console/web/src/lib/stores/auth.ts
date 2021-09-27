@@ -1,15 +1,14 @@
 import * as auth from '$lib/api/auth';
 import { setAuthToken } from '$lib/api/client';
-import type { IRegisterUser } from '$lib/models/user';
+import type { IRegisterUser, IUser } from '$lib/models/user';
 import { savedWritable } from '$lib/utils/stores';
-import { get } from 'svelte/store';
 
 const CURRENT_USER_TOKEN_KEY = 'current_token_user';
 const CURRENT_USER_KEY = 'current_user';
 
-export const currentUserToken = savedWritable(CURRENT_USER_TOKEN_KEY);
+export const currentUserToken = savedWritable<string>(CURRENT_USER_TOKEN_KEY);
 currentUserToken.subscribe(setAuthToken);
-export const currentUser = savedWritable(CURRENT_USER_KEY, null, (set) => {
+export const currentUser = savedWritable<IUser>(CURRENT_USER_KEY, null, (set) => {
 	const unsubscribe = currentUserToken.subscribe((token) => {
 		if (!token) {
 			set(null);

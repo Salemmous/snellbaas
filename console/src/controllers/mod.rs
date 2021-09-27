@@ -1,7 +1,7 @@
 use actix_web::{web, Scope};
 
 mod auth;
-mod console;
+pub mod console;
 mod projects;
 
 pub fn get_service() -> Scope {
@@ -9,6 +9,5 @@ pub fn get_service() -> Scope {
 
     resource
         .service(auth::get_service())
-        .service(console::get_service())
         .service(projects::get_service())
 }

@@ -14,7 +14,7 @@ pub fn get_service() -> Scope {
     let resource = web::scope("/info");
 
     resource
-        .route("/", web::get().to(get_projects_for_user))
+        .route("/list", web::get().to(get_projects_for_user))
         .route("/{project_id}", web::get().to(get_project))
 }
 

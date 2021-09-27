@@ -58,6 +58,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(project_service.clone()))
             .service(hello)
             .service(controllers::get_service())
+            .service(controllers::console::get_service())
     })
     .bind("127.0.0.1:8080")?
     .run()
