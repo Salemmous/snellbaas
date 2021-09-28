@@ -5,7 +5,7 @@
 </script>
 
 <Header />
-<main class="flex flex-grow flex-col p-2 w-full mx-auto">
+<main class="flex flex-grow flex-col w-full mx-auto">
 	<slot />
 </main>
 

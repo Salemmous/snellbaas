@@ -8,12 +8,12 @@
 	};
 </script>
 
-<header class="w-full flex justify-between items-center p-4">
+<header class="w-full flex justify-between items-center p-4 bg-gray-200 elevation-2">
 	<div />
 	<nav class="flex w-full">
 		<ul class="flex space-x-4">
 			<li class:active={$page.path === '/'}><Button rectangle small href="/">SnellBaas</Button></li>
-			<li class:active={$page.path === '/about'}>
+			<li class:active={$page.path === '/about'} class="hidden md:block">
 				<Button rectangle small href="/about">About</Button>
 			</li>
 		</ul>

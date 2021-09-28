@@ -12,8 +12,10 @@
 	});
 </script>
 
-{#if project}
-	<h1>{project.name}</h1>
-{:else}
-	<Loading />
-{/if}
+<section class="p-4">
+	{#if project}
+		<h1>{project.name}</h1>
+	{:else}
+		<Loading />
+	{/if}
+</section>
