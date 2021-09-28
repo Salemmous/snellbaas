@@ -1,5 +1,3 @@
-use crate::database;
-use error::SBError;
 use mongodb::Database;
 
 pub mod users;
@@ -12,19 +10,12 @@ pub struct AuthenticationService {
 }
 
 impl AuthenticationService {
-    pub async fn init(
-        db_url: String,
-        db_name: String,
-        collection_name: String,
-        secret: String,
-    ) -> std::result::Result<AuthenticationService, SBError> {
-        let db = database::get_db(db_url, db_name).await?;
+    pub fn init(db: Database, collection_name: String, secret: String) -> AuthenticationService {
         let collection = db.collection(collection_name.as_ref());
-        let service = AuthenticationService {
+        AuthenticationService {
             db: db,
             secret: secret,
             users: users::UserService::new(collection),
-        };
-        Ok(service)
+        }
     }
 }
