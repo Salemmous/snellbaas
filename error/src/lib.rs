@@ -4,17 +4,15 @@ use thiserror::Error;
 pub enum SBError {
     #[error("Database connection error")]
     DBConnectionError(),
-    #[error("User service error: {message:?}")]
-    UserServiceError { message: String },
-    #[error("User internal service error: {message:?}")]
-    UserInternalServiceError { message: String },
-    #[error("Project service error: {message:?}")]
-    ProjectServiceError { message: String },
-    #[error("Project internal service error: {message:?}")]
-    ProjectInternalServiceError { message: String },
+    #[error("Service error [{service:?}]: {message:?}")]
+    ServiceError { message: String, service: String },
+    #[error("Internal service error [{service:?}]: {message:?}")]
+    InternalServiceError { message: String, service: String },
     #[error("ENV Key Missing: {key:?}")]
     EnvConfigError { key: String },
 }
+
+pub type SBResult<T> = std::result::Result<T, SBError>;
 
 #[cfg(test)]
 mod tests {

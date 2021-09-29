@@ -6,7 +6,7 @@ use error::SBError;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
-pub struct Info {
+struct Info {
     pub project_id: String,
 }
 
@@ -27,9 +27,10 @@ async fn get_projects_for_user(
     let result = service.get_projects_for_user(&requestor.sub).await;
     match result {
         Ok(result) => HttpResponse::Ok().json(result),
-        Err(SBError::UserServiceError { message }) => {
-            HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message)
-        }
+        Err(SBError::ServiceError {
+            message,
+            service: _,
+        }) => HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message),
         Err(error) => {
             println!("{}", error);
             HttpResponse::InternalServerError().finish()
@@ -52,9 +53,10 @@ async fn get_project(
             }
             HttpResponse::Ok().json(result)
         }
-        Err(SBError::UserServiceError { message }) => {
-            HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message)
-        }
+        Err(SBError::ServiceError {
+            message,
+            service: _,
+        }) => HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message),
         Err(error) => {
             println!("{}", error);
             HttpResponse::InternalServerError().finish()

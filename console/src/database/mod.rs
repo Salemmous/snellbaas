@@ -1,5 +1,5 @@
 use error::SBError;
-use mongodb::{Client, Database};
+use mongodb::Client;
 
 use std::result::Result;
 

@@ -24,9 +24,10 @@ async fn get_single_user(
 
     match auth_res {
         Ok(result) => HttpResponse::Ok().json(result),
-        Err(SBError::UserServiceError { message }) => {
-            HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message)
-        }
+        Err(SBError::ServiceError {
+            message,
+            service: _,
+        }) => HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message),
         Err(error) => {
             println!("{}", error);
             HttpResponse::InternalServerError().finish()

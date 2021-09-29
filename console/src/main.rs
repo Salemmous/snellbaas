@@ -39,15 +39,9 @@ fn build_auth_data(db: mongodb::Database) -> AuthenticationService {
     AuthenticationService::init(db, user_collection_name, secret)
 }
 
-fn build_project_data(
-    authentication_service: AuthenticationService,
-) -> services::projects::ProjectService {
+fn build_project_data(db: mongodb::Database) -> services::projects::ProjectService {
     let project_collection_name = get_var("MONGO_PROJECT_COLLECTION");
-    services::projects::ProjectService::new(
-        authentication_service
-            .db
-            .collection(project_collection_name.as_ref()),
-    )
+    services::projects::ProjectService::new(db.collection(project_collection_name.as_ref()))
 }
 
 #[actix_web::main]
@@ -61,7 +55,9 @@ async fn main() -> std::io::Result<()> {
         let db_client_data = db_client.clone();
         let db_data = build_db_data(db_client_data.clone());
         let authentication_service = build_auth_data(db_data.clone());
-        let project_service = build_project_data(authentication_service.clone());
+        let project_service = build_project_data(db_data.clone());
+        let project_mongodb_service =
+            services::project_mongodb::ProjectMongoDBService::new(db_client.clone());
         App::new()
             .wrap(cors)
             .wrap(middleware::Logger::default())
@@ -69,6 +65,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(db_data))
             .app_data(web::Data::new(authentication_service))
             .app_data(web::Data::new(project_service))
+            .app_data(web::Data::new(project_mongodb_service))
             .service(hello)
             .service(controllers::get_service())
             .service(controllers::console::get_service())

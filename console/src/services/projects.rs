@@ -35,31 +35,37 @@ impl ProjectService {
                 None,
             )
             .await
-            .map_err(|_| SBError::ProjectInternalServiceError {
+            .map_err(|_| SBError::InternalServiceError {
+                service: String::from("projects"),
                 message: String::from("Failure listing projects."),
             })?;
-        cursor.try_collect::<Vec<Project>>().await.map_err(|_| {
-            SBError::ProjectInternalServiceError {
+        cursor
+            .try_collect::<Vec<Project>>()
+            .await
+            .map_err(|_| SBError::InternalServiceError {
+                service: String::from("projects"),
                 message: String::from("Failure listing projects."),
-            }
-        })
+            })
     }
 
     pub async fn get(&self, project_id: &str) -> ProjectServiceResult<Project> {
         let project_oid =
-            ObjectId::from_str(project_id).map_err(|_| SBError::UserInternalServiceError {
+            ObjectId::from_str(project_id).map_err(|_| SBError::InternalServiceError {
+                service: String::from("projects"),
                 message: String::from("Failure making oid object."),
             })?;
         let res = self
             .collection
             .find_one(doc! {"_id":project_oid}, None)
             .await
-            .map_err(|_| SBError::ProjectInternalServiceError {
+            .map_err(|_| SBError::InternalServiceError {
+                service: String::from("projects"),
                 message: String::from("Failure finding project."),
             })?;
         match res {
             Some(r) => Ok(r),
-            None => Err(SBError::ProjectServiceError {
+            None => Err(SBError::ServiceError {
+                service: String::from("projects"),
                 message: String::from("No project found"),
             }),
         }
@@ -72,7 +78,8 @@ impl ProjectService {
             .map(|r: InsertOneResult| MarshalledInsertOne {
                 _id: r.inserted_id.as_object_id().unwrap().to_hex(),
             })
-            .map_err(|_| SBError::ProjectInternalServiceError {
+            .map_err(|_| SBError::InternalServiceError {
+                service: String::from("projects"),
                 message: String::from("Could not create user."),
             })
     }
