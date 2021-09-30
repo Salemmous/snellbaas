@@ -13,15 +13,13 @@ pub fn get_service() -> Scope {
 
 async fn create_project(
     service: web::Data<ProjectService>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
     project_payload: Json<Project>,
 ) -> impl Responder {
-    let requestor = authorized_user.unwrap();
-
     let project = Project {
         id: Option::None,
         name: (*project_payload.name).to_owned(),
-        users: vec![requestor.sub],
+        users: vec![authorized_user.sub],
     };
 
     let result = service.create(project).await;

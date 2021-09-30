@@ -808,6 +808,7 @@ dependencies = [
  "env_logger",
  "error",
  "futures",
+ "jsonwebtoken",
  "mongodb",
  "serde",
  "validator 0.14.0",

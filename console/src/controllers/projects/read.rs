@@ -20,11 +20,9 @@ pub fn get_service() -> Scope {
 
 async fn get_projects_for_user(
     service: web::Data<ProjectService>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    let requestor = authorized_user.unwrap();
-
-    let result = service.get_projects_for_user(&requestor.sub).await;
+    let result = service.get_projects_for_user(&authorized_user.sub).await;
     match result {
         Ok(result) => HttpResponse::Ok().json(result),
         Err(SBError::ServiceError {
@@ -41,14 +39,12 @@ async fn get_projects_for_user(
 async fn get_project(
     service: web::Data<ProjectService>,
     info: web::Path<Info>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    let requestor = authorized_user.unwrap();
-
     let result: std::result::Result<Project, SBError> = service.get(&info.project_id).await;
     match result {
         Ok(result) => {
-            if !result.users.contains(&requestor.sub) {
+            if !result.users.contains(&authorized_user.sub) {
                 return HttpResponse::Unauthorized().finish();
             }
             HttpResponse::Ok().json(result)

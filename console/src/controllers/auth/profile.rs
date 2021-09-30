@@ -12,15 +12,9 @@ pub fn get_service() -> Resource {
 
 async fn get_single_user(
     service: web::Data<AuthenticationService>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    if authorized_user.is_none() {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let requestor = authorized_user.unwrap();
-
-    let auth_res = service.users.get(&requestor.sub).await;
+    let auth_res = service.users.get(&authorized_user.sub).await;
 
     match auth_res {
         Ok(result) => HttpResponse::Ok().json(result),

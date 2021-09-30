@@ -18,11 +18,9 @@ async fn update_user(
     service: web::Data<AuthenticationService>,
     info: web::Path<Info>,
     updates: Json<UpdateUser>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    let requestor = authorized_user.unwrap();
-
-    if &requestor.sub != &info.user_id {
+    if &authorized_user.sub != &info.user_id {
         return HttpResponse::Unauthorized().finish();
     }
 
@@ -46,15 +44,9 @@ async fn update_user(
 async fn get_single_user(
     service: web::Data<AuthenticationService>,
     info: web::Path<Info>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    if authorized_user.is_none() {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let requestor = authorized_user.unwrap();
-
-    if &requestor.sub != &info.user_id {
+    if &authorized_user.sub != &info.user_id {
         return HttpResponse::Unauthorized().finish();
     }
 
@@ -76,15 +68,9 @@ async fn get_single_user(
 async fn delete_single_user(
     service: web::Data<AuthenticationService>,
     info: web::Path<Info>,
-    authorized_user: Option<AuthorizedUser>,
+    authorized_user: AuthorizedUser,
 ) -> impl Responder {
-    if authorized_user.is_none() {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    let requestor = authorized_user.unwrap();
-
-    if &requestor.sub != &info.user_id {
+    if &authorized_user.sub != &info.user_id {
         return HttpResponse::Unauthorized().finish();
     }
 

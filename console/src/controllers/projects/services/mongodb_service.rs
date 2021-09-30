@@ -1,6 +1,6 @@
+use crate::models::project::ProjectUser;
 use crate::services::project_mongodb::ProjectMongoDBService;
 use actix_web::{http, web, HttpResponse, Responder, Scope};
-use auth::models::users::AuthorizedUser;
 use error::SBError;
 use mongodb::{bson::Document, options::FindOptions};
 use serde::Deserialize;
@@ -37,7 +37,7 @@ pub fn get_service() -> Scope {
 async fn get_collection(
     service: web::Data<ProjectMongoDBService>,
     info: web::Path<ProjectInfo>,
-    _authorized_user: Option<AuthorizedUser>,
+    _authorized_user: Option<ProjectUser>,
 ) -> impl Responder {
     let result = service.get_collections_for_project(&info.project_id).await;
     match result {
@@ -57,7 +57,7 @@ async fn get_documents(
     service: web::Data<ProjectMongoDBService>,
     info: web::Path<ProjectCollectionInfo>,
     query: Json<ProjectDocumentQuery>,
-    _authorized_user: Option<AuthorizedUser>,
+    authorized_user: ProjectUser,
 ) -> impl Responder {
     let result = service
         .get_documents_from_collection(
@@ -67,6 +67,7 @@ async fn get_documents(
             query.options.clone(),
         )
         .await;
+    println!("{:?}", authorized_user);
     match result {
         Ok(result) => HttpResponse::Ok().json(result),
         Err(SBError::ServiceError {
