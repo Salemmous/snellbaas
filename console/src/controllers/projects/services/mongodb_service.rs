@@ -67,7 +67,6 @@ async fn get_documents(
             query.options.clone(),
         )
         .await;
-    println!("{:?}", authorized_user);
     match result {
         Ok(result) => HttpResponse::Ok().json(result),
         Err(SBError::ServiceError {
