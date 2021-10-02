@@ -5,7 +5,7 @@ use mongodb::{
     bson::{doc, Document},
     options::{
         CreateCollectionOptions, DeleteOptions, DropCollectionOptions, FindOneOptions, FindOptions,
-        InsertOneOptions, UpdateModifications, UpdateOptions,
+        InsertOneOptions, ReplaceOptions, UpdateModifications, UpdateOptions,
     },
     results::{CollectionSpecification, DeleteResult, UpdateResult},
     Client,
@@ -222,5 +222,28 @@ impl ProjectMongoDBService {
             options,
         )
         .await
+    }
+
+    pub async fn set_document(
+        &self,
+        project_id: &str,
+        collection_name: &str,
+        document_id: &str,
+        set: Document,
+        options: Option<ReplaceOptions>,
+    ) -> SBResult<UpdateResult> {
+        let oid = ObjectId::from_str(document_id).map_err(|_| SBError::InternalServiceError {
+            service: String::from("mongodb"),
+            message: String::from("Failure making oid object."),
+        })?;
+        let database = self.client.database(&format!("project-{}", project_id));
+        database
+            .collection::<Document>(collection_name)
+            .replace_one(doc! {"_id":oid}, set, options)
+            .await
+            .map_err(|_| SBError::InternalServiceError {
+                service: String::from("mongodb"),
+                message: String::from("Failure setting document."),
+            })
     }
 }

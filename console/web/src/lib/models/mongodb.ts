@@ -31,3 +31,9 @@ export interface IMongoDBDocumentUpdated {
 	modifiedCount: number;
 	upsertedId: any;
 }
+
+interface _IMongoDBDocument {
+	_id: { $oid: string };
+}
+
+export type IMongoDBDocument = _IMongoDBDocument & object;

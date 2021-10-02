@@ -1,5 +1,6 @@
 import type {
 	IMongoDBCollection,
+	IMongoDBDocument,
 	IMongoDBDocumentCreated,
 	IMongoDBDocumentDeleted,
 	IMongoDBDocumentUpdated,
@@ -36,16 +37,17 @@ export async function dropCollection(projectId: string, collectionName: string):
 	return res.data;
 }
 
-export async function getDocuments<T>(
+export async function getDocuments<T extends IMongoDBDocument>(
 	projectId: string,
 	collectionName: string,
 	filter?: object,
+	options?: object,
 ): Promise<T[]> {
 	const res = await getClient().post(
 		`/projects/services/${encodeURIComponent(projectId)}/mongodb/collections/${encodeURIComponent(
 			collectionName,
 		)}/documents`,
-		{ filter },
+		{ filter, options },
 	);
 	return res.data;
 }
@@ -64,7 +66,7 @@ export async function createDocument(
 	return res.data;
 }
 
-export async function getDocument<T>(
+export async function getDocument<T extends IMongoDBDocument>(
 	projectId: string,
 	collectionName: string,
 	documentId: string,
@@ -96,12 +98,29 @@ export async function updateDocument(
 	projectId: string,
 	collectionName: string,
 	documentId: string,
+	update: object,
 ): Promise<IMongoDBDocumentUpdated> {
 	const res = await getClient().post(
 		`/projects/services/${encodeURIComponent(projectId)}/mongodb/collections/${encodeURIComponent(
 			collectionName,
 		)}/documents/${documentId}/update`,
-		{},
+		{ update },
+	);
+	return res.data;
+}
+
+export async function setDocument(
+	projectId: string,
+	collectionName: string,
+	documentId: string,
+	set: object,
+	options?: object,
+): Promise<IMongoDBDocumentUpdated> {
+	const res = await getClient().post(
+		`/projects/services/${encodeURIComponent(projectId)}/mongodb/collections/${encodeURIComponent(
+			collectionName,
+		)}/documents/${documentId}/set`,
+		{ set, options },
 	);
 	return res.data;
 }

@@ -6,7 +6,7 @@ use mongodb::{
     bson::Document,
     options::{
         CreateCollectionOptions, DeleteOptions, DropCollectionOptions, FindOneOptions, FindOptions,
-        InsertOneOptions, UpdateOptions,
+        InsertOneOptions, ReplaceOptions, UpdateOptions,
     },
 };
 use serde::Deserialize;
@@ -75,6 +75,12 @@ struct ProjectUpdateDocumentByIdQuery {
 }
 
 #[derive(Deserialize)]
+struct ProjectReplaceDocumentByIdQuery {
+    pub set: Document,
+    pub options: Option<ReplaceOptions>,
+}
+
+#[derive(Deserialize)]
 struct ProjectUpdateDocumentQuery {
     pub update: Document,
     pub filter: Document,
@@ -109,6 +115,10 @@ pub fn get_service() -> Scope {
         .route(
             "/collections/{collection_name}/documents/{document_id}/get",
             web::post().to(get_document_by_id),
+        )
+        .route(
+            "/collections/{collection_name}/documents/{document_id}/set",
+            web::post().to(set_document),
         )
         .route(
             "/collections/{collection_name}/documents/{document_id}/delete",
@@ -370,6 +380,34 @@ async fn update_document_by_id(
             &info.collection_name,
             &info.document_id,
             query.update.clone(),
+            query.options.clone(),
+        )
+        .await;
+    match result {
+        Ok(result) => HttpResponse::Ok().json(result),
+        Err(SBError::ServiceError {
+            message,
+            service: _,
+        }) => HttpResponse::build(http::StatusCode::BAD_REQUEST).body(message),
+        Err(error) => {
+            println!("{}", error);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+async fn set_document(
+    service: web::Data<ProjectMongoDBService>,
+    info: web::Path<ProjectDocumentInfo>,
+    query: Json<ProjectReplaceDocumentByIdQuery>,
+    _authorized_user: ProjectUser,
+) -> impl Responder {
+    let result = service
+        .set_document(
+            &info.project_id,
+            &info.collection_name,
+            &info.document_id,
+            query.set.clone(),
             query.options.clone(),
         )
         .await;

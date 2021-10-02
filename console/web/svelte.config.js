@@ -7,8 +7,8 @@ const config = {
 	// for more information about preprocessors
 	preprocess: [
 		preprocess({
-			postcss: true
-		})
+			postcss: true,
+		}),
 	],
 
 	kit: {
@@ -17,14 +17,14 @@ const config = {
 			// default options are shown
 			pages: 'build',
 			assets: 'build',
-			fallback: '/index.html'
+			fallback: '/index.html',
 		}),
 		target: '#svelte',
 		ssr: false,
 		prerender: {
-			enabled: false
-		}
-	}
+			enabled: false,
+		},
+	},
 };
 
 export default config;
