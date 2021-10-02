@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import {
-		createDocument,
-		deleteDocument,
-		getDocument,
-		setDocument,
-		updateDocument,
-	} from '$lib/api/mongodb';
+	import { createDocument, deleteDocument, getDocument, setDocument } from '$lib/api/mongodb';
 	import type { IMongoDBDocument } from '$lib/models/mongodb';
 	import { Button, Loading } from 'attractions';
 	let document: IMongoDBDocument;
@@ -30,6 +24,7 @@
 
 	const handleDelete = async () => {
 		const sure = confirm('Are you sure?');
+		if (!sure) return;
 		await deleteDocument(
 			$page.params.project_id,
 			$page.params.collection_name,

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-
 	import { page } from '$app/stores';
 	import { listCollections } from '$lib/api/mongodb';
 	import type { IMongoDBCollection } from '$lib/models/mongodb';
@@ -14,6 +13,10 @@
 	$: fetchCollections($page.params.project_id);
 
 	const handleSelectCollection = (collection) => {
+		if (collection.name === $page.params.collection_name) {
+			goto(`/user/projects/${$page.params.project_id}/mongodb/`);
+			return;
+		}
 		goto(`/user/projects/${$page.params.project_id}/mongodb/${collection.name}`);
 	};
 </script>

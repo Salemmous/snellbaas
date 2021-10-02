@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	import { page } from '$app/stores';
-	import { getDocuments } from '$lib/api/mongodb';
+	import { dropCollection, getDocuments } from '$lib/api/mongodb';
 	import type { IMongoDBDocument } from '$lib/models/mongodb';
 	import { Button, Loading } from 'attractions';
 	let documents: IMongoDBDocument[];
@@ -23,14 +23,28 @@
 	$: fetchDocuments($page.params.project_id, $page.params.collection_name);
 
 	const handleSelectDocument = (document) => {
+		if (document._id?.$oid === $page.params.document_id) {
+			goto(`/user/projects/${$page.params.project_id}/mongodb/${$page.params.collection_name}`);
+			return;
+		}
 		goto(
-			`/user/projects/${$page.params.project_id}/mongodb/${$page.params.collection_name}/${document._id.$oid}`,
+			`/user/projects/${$page.params.project_id}/mongodb/${$page.params.collection_name}/${document._id?.$oid}`,
 		);
+	};
+
+	const handleDropCollection = async () => {
+		const sure = confirm('Are you sure?');
+		if (!sure) return;
+		await dropCollection($page.params.project_id, $page.params.collection_name);
+		goto(`/user/projects/${$page.params.project_id}/mongodb`);
 	};
 </script>
 
 <section class="flex">
 	<div class="p-2">
+		<div class="flex flex-row-reverse">
+			<Button danger on:click={handleDropCollection}>Drop collection</Button>
+		</div>
 		{#if documents}
 			<ul>
 				{#each documents as document}
