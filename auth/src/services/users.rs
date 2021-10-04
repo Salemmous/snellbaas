@@ -219,16 +219,17 @@ impl UserService {
         }
     }
 
-    pub async fn get_users(&self, skip: u64, limit: i64) -> UserServiceResult<Vec<User>> {
-        let find_options = FindOptions::builder().limit(limit).skip(skip).build();
-        let cursor = self
-            .collection
-            .find(None, find_options)
-            .await
-            .map_err(|_| SBError::InternalServiceError {
+    pub async fn get_users(
+        &self,
+        filter: Option<Document>,
+        options: Option<FindOptions>,
+    ) -> UserServiceResult<Vec<User>> {
+        let cursor = self.collection.find(filter, options).await.map_err(|_| {
+            SBError::InternalServiceError {
                 service: String::from("users"),
                 message: String::from("Failure listing users."),
-            })?;
+            }
+        })?;
         cursor
             .try_collect::<Vec<User>>()
             .await

@@ -58,6 +58,10 @@ async fn main() -> std::io::Result<()> {
         let project_service = build_project_data(db_data.clone());
         let project_mongodb_service =
             services::project_mongodb::ProjectMongoDBService::new(db_client.clone());
+        let project_auth_service = services::project_auth::ProjectAuthService::new(
+            db_client.clone(),
+            get_var("PROJECT_AUTH_SECRET"),
+        );
         App::new()
             .wrap(cors)
             .wrap(middleware::Logger::default())
@@ -66,6 +70,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(authentication_service))
             .app_data(web::Data::new(project_service))
             .app_data(web::Data::new(project_mongodb_service))
+            .app_data(web::Data::new(project_auth_service))
             .service(hello)
             .service(controllers::get_service())
             .service(controllers::console::get_service())
